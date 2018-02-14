@@ -42,7 +42,7 @@ public class MineCombat extends PluginBase implements Listener{
 
 	private Map<String, String> lang;
 
-	
+
 	private HashMap<Integer, GameContainer> ongoing = new HashMap<>();
 	private HashMap<String, Class<? extends Game>> games = new HashMap<>();
 	private HashMap<String, Participant> players = new HashMap<>();
@@ -85,7 +85,7 @@ public class MineCombat extends PluginBase implements Listener{
 	 */
 	public boolean leaveGame(Participant player){
 		this.players.remove(player);
-		
+
 		return player.leaveGame();
 	}
 
@@ -93,14 +93,14 @@ public class MineCombat extends PluginBase implements Listener{
 		if(!games.containsKey(name)){
 			return false;
 		}
-		
+
 		if(position.length < 2 || position[0] == null || position[1] ==null){
 			position = null;
 		}
 		try{
 			Game game = (Game) games.get(name).getConstructor(MineCombat.class, String.class, Position[].class, Position[].class).newInstance(this, tag, position, spawns);
 			final GameContainer container = new GameContainer(game);
-	
+
 			if(game.getStandByTime() > 0){
 				if(this.standBy(container)){
 					this.ongoing.put(index++, container);
@@ -111,13 +111,13 @@ public class MineCombat extends PluginBase implements Listener{
 			}
 
 			this.ongoing.put(index++, container);
-			
+
 			return container.startGame();
 		}catch(Exception e){
 			return false;
 		}
 	}
-	
+
 	public boolean stopGame(Game game){
 		for(int index : this.ongoing.keySet()){
 			GameContainer container = this.ongoing.get(index);
@@ -147,17 +147,17 @@ public class MineCombat extends PluginBase implements Listener{
 		}
 		return false;
 	}
-	
+
 	public String getMessage(String key, Object... params){
 		if(this.lang.containsKey(key)){
 			return replaceMessage(this.lang.get(key), params);
 		}
 		return "Could not find message with " + key;
 	}
-	
+
 	private String replaceMessage(String lang, Object[] params){
 		StringBuilder builder = new StringBuilder();
-		
+
 		for(int i = 0; i < lang.length(); i++){
 			char c = lang.charAt(i);
 			if(c == '{'){
@@ -166,10 +166,10 @@ public class MineCombat extends PluginBase implements Listener{
 					try{
 						String p = lang.substring(i + 1, index);
 						int param = Integer.parseInt(p);
-						
+
 						if(params.length > param){
 							i = index;
-							
+
 							builder.append(params[param]);
 							continue;
 						}
@@ -178,15 +178,15 @@ public class MineCombat extends PluginBase implements Listener{
 			}
 			builder.append(c);
 		}
-		
+
 		return TextFormat.colorize(builder.toString());
 	}
-	
+
 	@Override
 	public void onLoad(){
 		this.addGame("gunmatch", GunMatch.class);
 	}
-	
+
 	@Override
 	public void onEnable(){
 		this.saveDefaultConfig();
@@ -197,16 +197,16 @@ public class MineCombat extends PluginBase implements Listener{
 		InputStream is = this.getResource("lang_" + name + ".json");
 		if(is == null){
 			this.getLogger().critical("Could not load language file. Changing to default.");
-			
+
 			is = this.getResource("lang_eng.json");
 		}
-		
+
 		try{
 			lang = new GsonBuilder().create().fromJson(Utils.readFile(is), new TypeToken<LinkedHashMap<String, String>>(){}.getType());
 		}catch(JsonSyntaxException | IOException e){
 			this.getLogger().critical(e.getMessage());
 		}
-		
+
 		if(!name.equals("eng")){
 			try{
 				LinkedHashMap<String, String> temp = new GsonBuilder().create().fromJson(Utils.readFile(this.getResource("lang_eng.json")), new TypeToken<LinkedHashMap<String, String>>(){}.getType());
@@ -245,14 +245,14 @@ public class MineCombat extends PluginBase implements Listener{
 						Double y = Double.parseDouble(pos[1]);
 						Double z = Double.parseDouble(pos[2]);
 						String world = pos[3];
-						
+
 						Level level = this.getServer().getLevelByName(world);
 						if(level == null){
 							this.getLogger().warning(this.getMessage("game.unlimitedWorld", key));
 						}else{
 							start = new Position(x, y, z, this.getServer().getLevelByName(world));
 						}
-						
+
 					}catch(Exception e){}
 				}
 
@@ -263,7 +263,7 @@ public class MineCombat extends PluginBase implements Listener{
 						Double y = Double.parseDouble(pos[1]);
 						Double z = Double.parseDouble(pos[2]);
 						String world = pos[3];
-						
+
 						Level level = this.getServer().getLevelByName(world);
 						if(level == null){
 							this.getLogger().warning(this.getMessage("game.unlimitedWorld", key));
@@ -279,19 +279,19 @@ public class MineCombat extends PluginBase implements Listener{
 
 				this.getLogger().notice(this.getMessage("game.unlimitedWorld", key));
 			}
-			
-			
+
+
 			List<String> temp = null;
 			try{
 				temp = (List<String>)game.getOrDefault("spawns", new ArrayList<String>());
 			}catch(ClassCastException e){
 				this.getLogger().warning(this.getMessage("game.invalidSpawn", key));
 			}
-			
+
 			Position[] spawns = null;
 			if(temp != null){
 				spawns = new Position[temp.size()];
-				
+
 				for(int i = 0; i < spawns.length; i++){
 					String[] pos = temp.get(i).split(" ");
 					if(pos.length >= 4){
@@ -311,7 +311,7 @@ public class MineCombat extends PluginBase implements Listener{
 					}
 				}
 			}
-			
+
 
 			if(this.games.containsKey(type)){
 				this.initGame(type, new Position[]{
@@ -328,12 +328,12 @@ public class MineCombat extends PluginBase implements Listener{
 		});
 		this.ongoing.clear();
 	}
-	
+
 	@EventHandler
 	public void onPlayerMove(PlayerMoveEvent event){
 		Player player = event.getPlayer();
 		String username = player.getName().toLowerCase();
-		
+
 		if(players.containsKey(username)){
 			Participant participant = players.get(username);
 
@@ -355,44 +355,44 @@ public class MineCombat extends PluginBase implements Listener{
 			if(this.ongoing.size() > 0){
 				Random random = new Random();
 				Game game = this.ongoing.get(random.nextInt(this.ongoing.size())).game;
-				
+
 				this.joinGame(game, participant);
 			}else{
 				player.sendMessage(this.getMessage("join.failed"));
 			}
 		}
 	}
-	
+
 	@EventHandler
 	public void onPlayerRespawn(PlayerRespawnEvent event){
 		Player player = event.getPlayer();
 		String username = player.getName().toLowerCase();
-		
+
 		if(this.players.containsKey(username)){
 			Participant participant = this.players.get(username);
 			participant.getJoinedGame().respawnParticipant(event, participant);
 		}
 	}
-	
+
 	@EventHandler
 	public void onDataPacketSend(DataPacketSendEvent event){
 		if(event.getPacket() instanceof SetEntityDataPacket){
 			SetEntityDataPacket pk = (SetEntityDataPacket) event.getPacket();
-			
+
 			if(pk.eid != 0){
 				Player player = event.getPlayer();
-				
+
 				final Participant participant = this.getParticipant(player);
 				if(participant != null && participant.getJoinedGame() != null){
 					for(Participant of : participant.getJoinedGame().getParticipants()){
 						if(of.getPlayer().getId() == pk.eid){
 							final String tag = participant.getJoinedGame().onSetNameTag(participant, of);
-							
+
 							Map<Integer, EntityData> map = pk.metadata.getMap();
-							
+
 							pk.metadata = new EntityMetadata();
 							map.forEach((k,v)->pk.metadata.put(v));
-							
+
 							pk.metadata.putString(Entity.DATA_NAMETAG, tag);
 							break;
 						}
@@ -401,20 +401,20 @@ public class MineCombat extends PluginBase implements Listener{
 			}
 		}else if(event.getPacket() instanceof AddPlayerPacket){
 			Player player = event.getPlayer();
-			
+
 			AddPlayerPacket pk = (AddPlayerPacket) event.getPacket();
-			
+
 			final Participant participant = this.getParticipant(player);
 			if(participant != null && participant.getJoinedGame() != null){
 				for(Participant of : participant.getJoinedGame().getParticipants()){
-					if(of.getPlayer().getId() == pk.eid){
+					if(of.getPlayer().getId() == pk.pid()){
 						final String tag = participant.getJoinedGame().onSetNameTag(participant, of);
-						
+
 						Map<Integer, EntityData> map = pk.metadata.getMap();
-						
+
 						pk.metadata = new EntityMetadata();
 						map.forEach((k,v)->pk.metadata.put(v));
-						
+
 						pk.metadata.putString(Entity.DATA_NAMETAG, tag);
 						break;
 					}
@@ -422,14 +422,14 @@ public class MineCombat extends PluginBase implements Listener{
 			}
 		}
 	}
-	
+
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent event){
 		Entity entity = event.getEntity();
 		if(entity instanceof Player){
 			Player player = (Player) entity;
 			String username = player.getName().toLowerCase();
-			
+
 			if(this.players.containsKey(username)){
 				Participant participant = this.players.get(username);
 				participant.getJoinedGame().onParticipantKilled(event, participant);
@@ -450,12 +450,12 @@ public class MineCombat extends PluginBase implements Listener{
 			players.remove(username);
 		}
 	}
-	
+
 	public boolean addGame(String name, Class<? extends Game> game, boolean force){
 		if(!force && this.games.containsKey(name.toLowerCase())){
 			return false;
 		}
-		
+
 		this.games.put(name.toLowerCase(), game);
 		return true;
 	}
@@ -463,23 +463,23 @@ public class MineCombat extends PluginBase implements Listener{
 	public boolean addGame(String name, Class<? extends Game> game){
 		return this.addGame(name, game, false);
 	}
-	
+
 	private class GameContainer{
 		private Game game = null;
 		private int taskId = -1;
-		
+
 		public GameContainer(Game game){
 			if(game == null){
 				throw new IllegalArgumentException("Cannot add null game");
 			}
-			
+
 			this.game = game;
 		}
-		
-		
+
+
 		/**
 		 * Starts game with positions and players. Provide position as null apply to all worlds
-		 * 
+		 *
 		 * @param participants
 		 * @return
 		 */
@@ -489,7 +489,7 @@ public class MineCombat extends PluginBase implements Listener{
 					@Override
 					public void onRun(int currentTick){
 						GameContainer.this.stopGame();
-						
+
 						if(game.getStandByTime() > 0){
 							if(!MineCombat.this.standBy(GameContainer.this)){
 								game._closeGame();
@@ -507,10 +507,10 @@ public class MineCombat extends PluginBase implements Listener{
 		public void stopGame(){
 			game._stopGame();
 		}
-		
+
 		/**
 		 * Stand by players
-		 * 
+		 *
 		 * @return
 		 */
 		public boolean standBy(){

@@ -10,8 +10,8 @@ public class EntityDamageByGunEvent extends EntityDamageByEntityEvent{
     public static HandlerList getHandlers(){
         return handlers;
     }
-    
-	public EntityDamageByGunEvent(Participant damager, Participant entity, int cause, float damage) {
+
+	public EntityDamageByGunEvent(Participant damager, Participant entity, DamageCause cause, float damage) {
 		super(damager.getPlayer(), entity.getPlayer(), cause, damage);
 	}
 }

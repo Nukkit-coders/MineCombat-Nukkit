@@ -1,7 +1,7 @@
 name: MineCombat
-version: "@VERSION@"
+version: "2.0"
 api: [1.0.0]
-author: onebone
+author: onebone, Update by PetteriM1
 main: me.onebone.minecombat.MineCombat
 
 permissions:
